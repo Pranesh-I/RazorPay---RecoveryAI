@@ -1,0 +1,157 @@
+# ==============================================================================
+# ReviveAI — .gitignore
+# ==============================================================================
+
+# Operating System Files
+# ----------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDEs and Editors
+# ----------------
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
+
+# Environment & Secrets (NEVER commit secrets!)
+# ---------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+secrets/
+
+# Node / Next.js / Frontend
+# -------------------------
+node_modules/
+.pnp
+.pnp.js
+.next/
+out/
+build/
+dist/
+.turbo/
+.vercel/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.tsbuildinfo
+.npm
+.pnpm-store
+
+# Python / FastAPI / Backend
+# --------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Python Virtual Environments
+# ---------------------------
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+pyvenv.cfg
+
+# Testing & Coverage
+# ------------------
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+junit/
+.ruff_cache/
+.mypy_cache/
+
+# Celery / Redis
+# --------------
+celerybeat-schedule
+celerybeat.pid
+dump.rdb
+
+# Database / SQLite / Local Storage
+# ---------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+
+# Data & Machine Learning Artifacts
+# ---------------------------------
+# Ignore all raw, processed, and model artifacts except .gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/models/*
+!data/models/.gitkeep
+
+# ML Model checkpoints & weights
+*.pkl
+*.pickle
+*.joblib
+*.cbm
+*.onnx
+*.pt
+*.pth
+*.h5
+*.ckpt
+
+# Docker
+# ------
+docker-compose.override.yml
+
+# Logs
+# ----
+logs/
+*.log

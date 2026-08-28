@@ -1,0 +1,22 @@
+# ==============================================================================
+# ReviveAI — Frontend Web App Dockerfile (Next.js / Node.js)
+# ==============================================================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Placeholder: Dependencies will be installed here
+# COPY package.json package-lock.json ./
+# COPY apps/web/package.json ./apps/web/
+# RUN npm install
+
+# Placeholder: Application code copy
+# COPY apps/web ./apps/web
+# COPY packages/shared ./packages/shared
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["npm", "run", "dev", "--prefix", "apps/web"]

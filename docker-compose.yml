@@ -1,0 +1,105 @@
+services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: reviveai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reviveai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reviveai_password}
+      POSTGRES_DB: ${POSTGRES_DB:-reviveai_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reviveai} -d ${POSTGRES_DB:-reviveai_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reviveai-network
+
+  # ----------------------------------------------------------------------------
+  # Redis (Message Broker & Cache)
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: reviveai-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reviveai-network
+
+  # ----------------------------------------------------------------------------
+  # Backend API (FastAPI)
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.api
+    container_name: reviveai-api
+    restart: unless-stopped
+    environment:
+      - APP_ENV=development
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-reviveai}:${POSTGRES_PASSWORD:-reviveai_password}@postgres:5432/${POSTGRES_DB:-reviveai_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./packages/shared:/app/packages/shared
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - reviveai-network
+
+  # ----------------------------------------------------------------------------
+  # Frontend Web App (Next.js)
+  # ----------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.web
+    container_name: reviveai-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages/shared:/app/packages/shared
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+    depends_on:
+      - api
+    networks:
+      - reviveai-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  reviveai-network:
+    driver: bridge
